@@ -5,7 +5,7 @@
     var dfd = $.Deferred();
 
     smart.patient.read().done(function(pt) {
-      var name = pt.name[0].given.join(" ") +" "+ pt.name[0].family.join(" ");
+      var name = pt.name[0].given.join(" ") +" "+ pt.name[0].family;
       var birthday = new Date(pt.birthDate).toISOString();
       var gender = pt.gender;
 
@@ -49,25 +49,30 @@
 
     var vitalsByCode = smart.byCode(observations, 'code');
 
-    (vitalsByCode['8302-2']||[]).forEach(function(v){
+
+    //  8302-2 50373000 Body Height
+    (vitalsByCode['50373000']||[]).forEach(function(v){
       vitals.heightData.push({
         vital_date: v.effectiveDateTime,
         height: smart.units.cm(v.valueQuantity)
       }); 
     });
 
-    (vitalsByCode['55284-4']||[]).forEach(function(v){
+    // 55284-4 75367002 Blood Pressure
+    (vitalsByCode['75367002']||[]).forEach(function(v){
 
       var components = v.component;
-
+      // 8462-4  271650006
       var diastolicObs = components.find(function(component){
       	return component.code.coding.find(function(coding) {
-      		return coding.code === "8462-4";
+      		return coding.code === "271650006";
       	});
       });
+
+      // 8480-6
       var systolicObs = components.find(function(component){
       	return component.code.coding.find(function(coding) {
-      		return coding.code === "8480-6";
+      		return coding.code === "271649006";
       	});
       });
       var systolic = systolicObs.valueQuantity.value;
@@ -115,7 +120,7 @@
   };
 
   function getObservations(){
-        return smart.patient.api.fetchAll({type: "Observation", query: {code: {$or: ['http://loinc.org|8302-2','http://loinc.org|55284-4']}}});
+        return smart.patient.api.fetchAll({type: "Observation", query: {code: {$or: ['http://snomed.info/sct|50373000','http://snomed.info/sct|75367002']}}});
         
   };
 
