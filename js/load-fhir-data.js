@@ -69,12 +69,30 @@
       	});
       });
 
+      if (diastolicObs === undefined) {
+          diastolicObs = components.find(function (component) {
+              return component.code.coding.find(function (coding) {
+                  return coding.code === "1091811000000102";
+              });
+          });
+      }
+
       // 8480-6
       var systolicObs = components.find(function(component){
       	return component.code.coding.find(function(coding) {
       		return coding.code === "271649006";
       	});
       });
+
+      if (systolicObs === undefined) {
+          systolicObs = components.find(function(component){
+              return component.code.coding.find(function(coding) {
+                  return coding.code === "72313002";
+              });
+          });
+      }
+
+
       var systolic = systolicObs.valueQuantity.value;
       var diastolic = diastolicObs.valueQuantity.value;
       var extensions = v.extension;

@@ -1,0 +1,5 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [ 'build', '-t', 'gcr.io/clear-shadow-234308/bp-image', '.' ]
+images:
+  - 'gcr.io/clear-shadow-234308/bp-image'
