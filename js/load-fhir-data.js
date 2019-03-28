@@ -92,47 +92,50 @@
           });
       }
 
+      if (systolicObs !== undefined && diastolicObs !== undefined) {
+          var systolic =
+              systolicObs.valueQuantity.value;
+          var diastolic = diastolicObs.valueQuantity.value;
+          var extensions = v.extension;
+          var obj = {
+              vital_date: v.effectiveDateTime,
+              systolic: systolic,
+              diastolic: diastolic
+          };
 
-      var systolic = systolicObs.valueQuantity.value;
-      var diastolic = diastolicObs.valueQuantity.value;
-      var extensions = v.extension;
-      var obj = {
-        vital_date: v.effectiveDateTime,
-        systolic: systolic,
-        diastolic: diastolic
-      };
-      
-      if (extensions) {
-         var position = extensions.find(function(extension) {
-            return extension.url === "http://fhir-registry.smarthealthit.org/StructureDefinition/vital-signs#position";
-         });
-         if (position) {
-      	     var coding = position.valueCodeableConcept.coding[0];
-             obj["bodyPositionCode"] = coding.system + coding.code;
-         }
-      }
-      
-      if (v.encounter){
-           var encounter = cachedLink(encounters, v.encounter);
-           var encounter_type = encounter.class;
-           if (encounter_type === "outpatient") {
-               encounter_type = "ambulatory";
-           }
-           obj["encounterTypeCode"] = "http://smarthealthit.org/terms/codes/EncounterType#" + encounter_type;
-      }
-              
-      if (v.bodySite) {
-        obj["bodySiteCode"] = v.bodySite.coding[0].system + v.bodySite.coding[0].code;
-      }
+          if (extensions) {
+              var position = extensions.find(function (extension) {
+                  return extension.url === "http://fhir-registry.smarthealthit.org/StructureDefinition/vital-signs#position";
+              });
+              if (position) {
+                  var coding = position.valueCodeableConcept.coding[0];
+                  obj["bodyPositionCode"] = coding.system + coding.code;
+              }
+          }
 
-      if (v.method) {
-        obj["methodCode"] = v.method.coding[0].system + v.method.coding[0].code;
+          if (v.encounter) {
+              var encounter = cachedLink(encounters, v.encounter);
+              var encounter_type = encounter.class;
+              if (encounter_type === "outpatient") {
+                  encounter_type = "ambulatory";
+              }
+              obj["encounterTypeCode"] = "http://smarthealthit.org/terms/codes/EncounterType#" + encounter_type;
+          }
+
+          if (v.bodySite) {
+              obj["bodySiteCode"] = v.bodySite.coding[0].system + v.bodySite.coding[0].code;
+          }
+
+          if (v.method) {
+              obj["methodCode"] = v.method.coding[0].system + v.method.coding[0].code;
+          }
+
+          //obj["encounterTypeCode"] = "http://smarthealthit.org/terms/codes/EncounterType#ambulatory";
+
+          vitals.bpData.push(obj);
       }
-      
-      //obj["encounterTypeCode"] = "http://smarthealthit.org/terms/codes/EncounterType#ambulatory";
-      
-      vitals.bpData.push(obj);
     });
+
 
     return vitals;
   };
